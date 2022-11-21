@@ -7,8 +7,8 @@ source venv/bin/activate
 Deactivate:
 deactivate
 
-Run device:
+Run devices first:
 python3 device.py
 
-Run discover:
+Then run discover:
 python3 discover.py
