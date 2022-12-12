@@ -7,14 +7,6 @@ from pickle import FALSE
 pass_config = click.make_pass_decorator(Config, ensure=True)
 
 
-class State:
-    pass
-
-
-state = State()
-state.devices = []
-
-
 @pass_config
 def write_config(config):
     config.write_config()
@@ -25,13 +17,17 @@ def read_config(config):
     config.read_config()
 
 
-def scan_for_devices():
+@pass_config
+def scan_for_devices(config):
     client = SSDPClient()
-    state.devices = client.m_search("mariachi-devices")
+    devices = client.m_search("mariachi-devices")
+    for device in devices:
+        config.add_device(device)
 
 
-def print_devices():
-    for device in state.devices:
+@pass_config
+def print_devices(config):
+    for device in config.devices:
         click.echo(f'{device.get("usn")} {device.get("device_ip")}')
 
 
@@ -84,7 +80,7 @@ def netstatus(scan, init, verbose):
             click.echo(
                 "Config file does not exist in this folder. Run mbroker init in order to create one.")
 
-    print_devices()
+    # print_devices()
 
 
 if __name__ == '__main__':
