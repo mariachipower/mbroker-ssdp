@@ -25,10 +25,11 @@ def scan_for_devices(config):
         config.add_device(device)
 
 
-@pass_config
-def print_devices(config):
-    for device in config.devices:
-        click.echo(f'{device.get("usn")} {device.get("device_ip")}')
+def print_devices(devices):
+    ctx = click.get_current_context()
+    verbose = ctx.params["verbose"]
+    for key, value in devices.items():
+        click.echo(f'{key} {value}')
 
 
 @click.command()
@@ -53,11 +54,13 @@ def print_devices(config):
     default=False,
     help="Verbose output."
 )
-def netstatus(scan, init, verbose):
+@pass_config
+def netstatus(config, scan, init, verbose):
     if scan:
         """(-scan): scans for other devices
         Scan network and show status of all devices found"""
         scan_for_devices()
+        print_devices(config.devices)
     elif init:
         """(-init): scans for other devices
         Scan network and show status of all devices found
@@ -68,6 +71,8 @@ def netstatus(scan, init, verbose):
         else:
             scan_for_devices()
             write_config()
+            print_devices(config.devices)
+
     else:
         """(DEFAULT): Reads CONFIG. Pulls status from all network devices. Does config exists?
         Y → Scan network and show status of devices in config file
@@ -76,11 +81,10 @@ def netstatus(scan, init, verbose):
             read_config()
             scan_for_devices()
             write_config()
+            print_devices(config.devices)
         else:
             click.echo(
                 "Config file does not exist in this folder. Run mbroker init in order to create one.")
-
-    # print_devices()
 
 
 if __name__ == '__main__':
