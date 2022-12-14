@@ -3,8 +3,11 @@ from config import Config
 import os
 import click
 from pickle import FALSE
+import json
 
 pass_config = click.make_pass_decorator(Config, ensure=True)
+
+spaces = [20, 10, 18, 18, 18, 10, 10]
 
 
 @pass_config
@@ -28,8 +31,19 @@ def scan_for_devices(config):
 def print_devices(devices):
     ctx = click.get_current_context()
     verbose = ctx.params["verbose"]
-    for key, value in devices.items():
-        click.echo(f'{key} {value}')
+    for key_row, value_row in devices.items():
+        print(key_row)
+        print(value_row)
+        print(type(value_row))
+        if type(value_row) is not dict:
+            value_row = json.loads(value_row.replace("'", '"'))
+
+        col_idx = 0
+        for key_column, value_column in value_row.items():
+            print(f'{value_column.ljust(spaces[col_idx])}', end='')
+            col_idx += 1
+
+    print(f'')
 
 
 @click.command()
