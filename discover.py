@@ -33,13 +33,13 @@ def print_devices(devices):
                 {'name': 'Device', 'padding': 18},
                 {'name': 'NT', 'padding': 18},
                 {'name': 'NTS', 'padding': 10}]
-
     for col_def in col_defs:
         name = col_def['name']
         padding = col_def['padding']
         print(f'{name.ljust(padding)}', end='')
     print(f'')
-
+    spaces = sum(c['padding'] for c in col_defs)
+    print('-' * spaces)
     ctx = click.get_current_context()
     verbose = ctx.params["verbose"]
     for key_row, value_row in devices.items():
