@@ -7,8 +7,6 @@ import json
 
 pass_config = click.make_pass_decorator(Config, ensure=True)
 
-spaces = [20, 10, 18, 18, 18, 10, 10]
-
 
 @pass_config
 def write_config(config):
@@ -29,21 +27,30 @@ def scan_for_devices(config):
 
 
 def print_devices(devices):
+    col_defs = [{'name': 'Last seen', 'padding': 20},
+                {'name': 'ID', 'padding': 10},
+                {'name': 'Server', 'padding': 18},
+                {'name': 'Device', 'padding': 18},
+                {'name': 'NT', 'padding': 18},
+                {'name': 'NTS', 'padding': 10}]
+
+    for col_def in col_defs:
+        name = col_def['name']
+        padding = col_def['padding']
+        print(f'{name.ljust(padding)}', end='')
+    print(f'')
+
     ctx = click.get_current_context()
     verbose = ctx.params["verbose"]
     for key_row, value_row in devices.items():
-        print(key_row)
-        print(value_row)
-        print(type(value_row))
         if type(value_row) is not dict:
             value_row = json.loads(value_row.replace("'", '"'))
-
         col_idx = 0
         for key_column, value_column in value_row.items():
-            print(f'{value_column.ljust(spaces[col_idx])}', end='')
+            padding = col_defs[col_idx]['padding']
+            print(f'{value_column.ljust(padding)}', end='')
             col_idx += 1
-
-    print(f'')
+        print(f'')
 
 
 @click.command()
